@@ -1,37 +1,40 @@
 services:
-  sendspin:
-    image: ghcr.io/sendspin-protocol/sendspin-docker:latest
-    build: .
-    container_name: sendspin-receiver
+  sendspin-bridge:
+    container_name: sendspin-bridge
+    hostname: sendspin-bridge
+    image: meiser79/sendspin-docker:latest
     network_mode: host
     devices:
       - /dev/snd:/dev/snd
     group_add:
       - "${AUDIO_GID:-29}"
     volumes:
-      - sendspin-config:/home/sendspin/.config/sendspin
-    restart: unless-stopped
+      - ./config:/home/sendspin/.config/sendspin
     environment:
-      SENDSPIN_NAME:            "${SENDSPIN_NAME:-Sendspin Speaker}"
-      SENDSPIN_AUDIO_DEVICE:    "${SENDSPIN_AUDIO_DEVICE:-}"
-      SENDSPIN_PORT:            "${SENDSPIN_PORT:-8927}"
-      SENDSPIN_LOG_LEVEL:       "${SENDSPIN_LOG_LEVEL:-INFO}"
-      SENDSPIN_HARDWARE_VOLUME: "${SENDSPIN_HARDWARE_VOLUME:-true}"
-      SENDSPIN_SERVER_URL:      "${SENDSPIN_SERVER_URL:-}"
-      SENDSPIN_AUDIO_FORMAT:    "${SENDSPIN_AUDIO_FORMAT:-}"
-      SENDSPIN_STATIC_DELAY_MS: "${SENDSPIN_STATIC_DELAY_MS:-}"
-      SENDSPIN_CLIENT_ID:       "${SENDSPIN_CLIENT_ID:-}"
-      SENDSPIN_HOOK_START:      "${SENDSPIN_HOOK_START:-}"
-      SENDSPIN_HOOK_STOP:       "${SENDSPIN_HOOK_STOP:-}"
-      SENDSPIN_HOOK_SET_VOLUME: "${SENDSPIN_HOOK_SET_VOLUME:-}"
-      SENDSPIN_MANUFACTURER:    "${SENDSPIN_MANUFACTURER:-}"
-      SENDSPIN_PRODUCT_NAME:    "${SENDSPIN_PRODUCT_NAME:-}"
-      SENDSPIN_DOCKER_VERSION:  "${SENDSPIN_DOCKER_VERSION:-local}"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
-volumes:
-  sendspin-config:
+      SENDSPIN_NAME:              "${SENDSPIN_NAME:-Sendspin Bridge}"
+      SENDSPIN_AUDIO_DEVICE:      "${SENDSPIN_AUDIO_DEVICE:-hw:1,0}"
+      SENDSPIN_PORT:              "${SENDSPIN_PORT:-8927}"
+      SENDSPIN_LOG_LEVEL:         "${SENDSPIN_LOG_LEVEL:-INFO}"
+      SENDSPIN_HARDWARE_VOLUME:   "${SENDSPIN_HARDWARE_VOLUME:-false}"
+      SENDSPIN_SERVER_URL:        "${SENDSPIN_SERVER_URL:-}"
+      SENDSPIN_AUDIO_FORMAT:      "${SENDSPIN_AUDIO_FORMAT:-}"
+      SENDSPIN_STATIC_DELAY_MS:   "${SENDSPIN_STATIC_DELAY_MS:-}"
+      SENDSPIN_CLIENT_ID:         "${SENDSPIN_CLIENT_ID:-}"
+      SENDSPIN_HOOK_START:        "${SENDSPIN_HOOK_START:-}"
+      SENDSPIN_HOOK_STOP:         "${SENDSPIN_HOOK_STOP:-}"
+      SENDSPIN_HOOK_SET_VOLUME:   "${SENDSPIN_HOOK_SET_VOLUME:-}"
+      SENDSPIN_MANUFACTURER:      "${SENDSPIN_MANUFACTURER:-Linux}"
+      SENDSPIN_PRODUCT_NAME:      "${SENDSPIN_PRODUCT_NAME:-}"
+      SENDSPIN_DOCKER_VERSION:    "${SENDSPIN_DOCKER_VERSION:-latest}"
+      FFMPEG_STREAM:              "${FFMPEG_STREAM:-true}"
+      FFMPEG_STREAM_LOGLEVEL:     "${FFMPEG_STREAM:-warning}"
+      FFMPEG_STREAM_PORT:         "${FFMPEG_STREAM_PORT:-8000}"
+      FFMPEG_STREAM_PATH:         "${FFMPEG_STREAM_PATH:-/stream.mp3}"
+      FFMPEG_STREAM_AUDIO_DEVICE: "${FFMPEG_STREAM_AUDIO_DEVICE:-hw:1,1}"
+      FFMPEG_STREAM_BITRATE:      "${FFMPEG_STREAM_BITRATE:-192k}"
+      FFMPEG_STREAM_CODEC:        "${FFMPEG_STREAM_CODEC:-libmp3lame}"
+      FFMPEG_STREAM_FORMAT:       "${FFMPEG_STREAM_FORMAT:-mp3}"
+      FFMPEG_STREAM_CONTENT_TYPE: "${FFMPEG_STREAM_CONTENT_TYPE:-audio/mpeg}"
+      FFMPEG_STREAM_SAMPLE_RATE:  "${FFMPEG_STREAM_SAMPLE_RATE:-44100}"
+      FFMPEG_STREAM_CHANNELS:     "${FFMPEG_STREAM_CHANNELS:-2}"
+    restart: unless-stopped

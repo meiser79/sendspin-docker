@@ -6,6 +6,10 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         libportaudio2 \
         alsa-utils \
+        bash \
+        ca-certificates \
+        ffmpeg \
+        procps \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir sendspin
